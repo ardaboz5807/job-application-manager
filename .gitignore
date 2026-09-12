@@ -1,0 +1,7 @@
+target/
+*.class
+my.db
+.settings/
+.classpath
+.project
+bin/
