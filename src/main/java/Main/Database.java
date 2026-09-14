@@ -7,10 +7,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class Database {
 
-	private static final String url = "jdbc:sqlite:my.db";
+	ArrayList<ArrayList<String>> applications = new ArrayList<>();
+	private static final String url = "jdbc:sqlite:advanced.db";
 	Database(){
 		createTable();
 	}
@@ -55,10 +57,10 @@ public class Database {
 		try(Connection conn = DriverManager.getConnection(url);
 			PreparedStatement stmt = conn.prepareStatement(sql)){
 			
-			stmt.setString(0, company);
-			stmt.setString(1, location);
-			stmt.setString(2, position);
-			stmt.setString(3, application_date);
+			stmt.setString(1, company);
+			stmt.setString(2, location);
+			stmt.setString(3, position);
+			stmt.setString(4, application_date);
 			ResultSet rs = stmt.executeQuery();  //return von SELECT
 			if(rs.next()) {
 				return rs.getInt("id");
@@ -120,34 +122,29 @@ public class Database {
 	}
 	
 	//Printet die ganze Tabelle
-	public void printTable() {
+	public ArrayList<ArrayList<String>> printTable() {
+		applications.clear();
 	    String sql = "SELECT * FROM applications;";
-	    int count = 0;
-
 	    try (Connection conn = DriverManager.getConnection(url);
 	         Statement stmt = conn.createStatement();
 	         ResultSet rs = stmt.executeQuery(sql)) {
-
 	        while (rs.next()) {
-
-	            System.out.println(
-	                "ID: " + rs.getInt("id") +
-	                " | Unternehmen: " + rs.getString("company") +
-	                " | Position: " + rs.getString("position") +
-	                " | Standort: " + rs.getString("location") +
-	                " | Status: " + rs.getString("status") +
-	                " | Bewerbungsdatum: " + rs.getString("application_date") +
-	                " | Update: " + rs.getString("last_update")
-	            );
-	            count++;
+	        		ArrayList<String> application = new ArrayList<>();
+	        		application.add(Integer.toString(rs.getInt("id")));
+	        		application.add(rs.getString("company"));
+	        		application.add(rs.getString("position"));
+	        		application.add(rs.getString("location"));
+	        		application.add(rs.getString("status"));
+	        		application.add(rs.getString("application_date"));
+	        		application.add(rs.getString("last_update"));
+	        		applications.add(application);
 	        }
-	        
-	        System.out.println("");
-	        System.out.println("Anzahl der Einträge: " + count);
-
-	    } catch (SQLException e) {
+	        return applications;
+	    } 
+	    catch (SQLException e) {
 	        e.printStackTrace();
 	    }
+	    return applications;
 	}
 }
 
